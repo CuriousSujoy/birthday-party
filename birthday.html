@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Party Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #ff8c00, #ff4d94);
+            color: #fff;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+        }
+        #countdown {
+            font-size: 2em;
+            color: #fff;
+            margin-top: 20px;
+        }
+        #current-time {
+            font-size: 1.5em;
+            color: #fff;
+            margin-top: 10px;
+        }
+        #party-image {
+            width: 100%;
+            height: 100vh;
+            object-fit: cover;
+            border-radius: 10px;
+            animation: slide 20s infinite linear;
+        }
+        #analog-clock {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+        #digital-clock {
+            font-size: 2em;
+            position: absolute;
+            top: 10%;
+            right: 5%;
+        }
+
+        @keyframes slide {
+            0% {
+                transform: translateX(0%);
+            }
+            25% {
+                transform: translateX(-25%);
+            }
+            50% {
+                transform: translateX(-50%);
+            }
+            75% {
+                transform: translateX(-75%);
+            }
+            100% {
+                transform: translateX(0%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Countdown to My Birthday Party</h1>
+    <div id="countdown"></div>
+    <div id="current-time"></div>
+    <!-- Analog Clock -->
+    <canvas id="analog-clock" width="200" height="200"></canvas>
+    <!-- Digital Clock -->
+    <div id="digital-clock"></div>
+    <!-- Party Image as Background -->
+    <div id="party-image"></div>
+
+    <script>
+        // Set the date we're counting down to
+        var countDownDate = new Date("December 25, 2023 18:00:00").getTime();
+
+        // Update the countdown and current time every 1 second
+        var x = setInterval(function() {
+
+            // Get the current date and time
+            var now = new Date().getTime();
+
+            // Calculate the remaining time
+            var distance = countDownDate - now;
+
+            // Calculate days, hours, minutes, and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the countdown
+            document.getElementById("countdown").innerHTML = days + "d " + hours + "h "
+            + minutes + "m " + seconds + "s ";
+
+            // If the countdown is over, display a message
+            if (distance < 0) {
+                clearInterval(x);
+                // Display a "Happy Birthday" message
+                document.getElementById("countdown").innerHTML = "Happy Birthday! 🎉";
+            }
+
+            // Display the current local time
+            var currentTime = new Date();
+            var hours = currentTime.getHours();
+            var minutes = currentTime.getMinutes();
+            var seconds = currentTime.getSeconds();
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            document.getElementById("current-time").innerHTML = "Current Time: " + hours + ":" + minutes + ":" + seconds + " " + ampm;
+
+            // Update digital clock
+            document.getElementById("digital-clock").innerHTML = hours + ":" + minutes + ":" + seconds + " " + ampm;
+
+            // Update analog clock
+            updateAnalogClock(hours, minutes, seconds);
+        }, 1000);
+
+        // Function to update the analog clock
+        function updateAnalogClock(hours, minutes, seconds) {
+            var canvas = document.getElementById("analog-clock");
+            var context = canvas.getContext("2d");
+            var radius = canvas.height / 2;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw clock face
+            context.beginPath();
+            context.arc(radius, radius, radius - 10, 0, 2 * Math.PI);
+            context.fillStyle = "#333";
+            context.fill();
+
+            // Draw hour hand
+            context.beginPath();
+            context.moveTo(radius, radius);
+            var hourAngle = (hours % 12 + minutes / 60) * 30 * Math.PI / 180;
+            context.lineTo(radius + radius * 0.5 * Math.cos(hourAngle), radius + radius * 0.5 * Math.sin(hourAngle));
+            context.lineWidth = 8;
+            context.strokeStyle = "#fff";
+            context.stroke();
+
+            // Draw minute hand
+            context.beginPath();
+            context.moveTo(radius, radius);
+            var minuteAngle = minutes * 6 * Math.PI / 180;
+            context.lineTo(radius + radius * 0.7 * Math.cos(minuteAngle), radius + radius * 0.7 * Math.sin(minuteAngle));
+            context.lineWidth = 4;
+            context.strokeStyle = "#fff";
+            context.stroke();
+
+            // Draw second hand
+            context.beginPath();
+            context.moveTo(radius, radius);
+            var secondAngle = seconds * 6 * Math.PI / 180;
+            context.lineTo(radius + radius * 0.8 * Math.cos(secondAngle), radius + radius * 0.8 * Math.sin(secondAngle));
+            context.lineWidth = 2;
+            context.strokeStyle = "#ff4d94";
+            context.stroke();
+
+            // Draw clock center
+            context.beginPath();
+            context.arc(radius, radius, 10, 0, 2 * Math.PI);
+            context.fillStyle = "#ff4d94";
+            context.fill();
+        }
+    </script>
+</body>
+</html>
